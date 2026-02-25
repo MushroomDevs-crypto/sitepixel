@@ -54,58 +54,74 @@
 .parallax-layer {
   position: absolute;
   left: 0;
-  display: flex;
-  flex-wrap: nowrap;
-}
-
-.parallax-layer img {
-  display: block;
-  height: 100%;
-  width: auto;
+  right: 0;
+  background-repeat: repeat-x;
+  background-size: auto 100%;
+  background-position: 0 bottom;
   image-rendering: pixelated;
-  flex-shrink: 0;
 }
 
-/* Layer 1 = farthest back (slowest, highest position) */
+/* Layer 1 = farthest back (slowest, highest position)
+   tile width = 36vh × (576/324) = 64vh */
 .parallax-layer-1 {
   bottom: 22%;
   height: 36vh;
   z-index: 1;
-  animation: parallax-scroll 52s linear infinite;
+  animation: parallax-scroll-1 52s linear infinite;
 }
 
+/* tile width = 44vh × (576/324) ≈ 78.2222vh */
 .parallax-layer-2 {
   bottom: 15%;
   height: 44vh;
   z-index: 2;
-  animation: parallax-scroll 36s linear infinite;
+  animation: parallax-scroll-2 36s linear infinite;
 }
 
+/* tile width = 52vh × (576/324) ≈ 92.4444vh */
 .parallax-layer-3 {
   bottom: 10%;
   height: 52vh;
   z-index: 3;
-  animation: parallax-scroll 23s linear infinite;
+  animation: parallax-scroll-3 23s linear infinite;
 }
 
+/* tile width = 60vh × (576/324) ≈ 106.6667vh */
 .parallax-layer-4 {
   bottom: 2%;
   height: 60vh;
   z-index: 4;
-  animation: parallax-scroll 14s linear infinite;
+  animation: parallax-scroll-4 14s linear infinite;
 }
 
-/* Layer 5 = closest (fastest, lowest position) */
+/* Layer 5 = closest (fastest, lowest position)
+   tile width = 66vh × (576/324) ≈ 117.3333vh */
 .parallax-layer-5 {
   bottom: 0;
   height: 66vh;
   z-index: 5;
-  animation: parallax-scroll 8s linear infinite;
+  animation: parallax-scroll-5 8s linear infinite;
 }
 
-@keyframes parallax-scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-16.6667%); }
+@keyframes parallax-scroll-1 {
+  from { background-position-x: 0; }
+  to   { background-position-x: -64vh; }
+}
+@keyframes parallax-scroll-2 {
+  from { background-position-x: 0; }
+  to   { background-position-x: -78.2222vh; }
+}
+@keyframes parallax-scroll-3 {
+  from { background-position-x: 0; }
+  to   { background-position-x: -92.4444vh; }
+}
+@keyframes parallax-scroll-4 {
+  from { background-position-x: 0; }
+  to   { background-position-x: -106.6667vh; }
+}
+@keyframes parallax-scroll-5 {
+  from { background-position-x: 0; }
+  to   { background-position-x: -117.3333vh; }
 }
 
 /* ============================================================
@@ -129,7 +145,7 @@
 .title-wrap h1 {
   margin: 0;
   font-size: clamp(0.6rem, 1.3vw, 0.9rem);
-  color: var(--cyan);
+  color: #ffffff;
   text-shadow: 0 0 8px var(--cyan), 0 0 20px rgba(0, 212, 255, 0.35);
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -139,7 +155,7 @@
 .title-wrap p {
   margin: 0.25rem 0 0;
   font-size: clamp(0.42rem, 0.65vw, 0.55rem);
-  color: var(--cyan);
+  color: #ffffff;
   line-height: 1.6;
 }
 
@@ -166,7 +182,6 @@
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
   gap: 0.4rem;
   padding: 0.4rem 0.75rem;
   background: rgba(6, 6, 20, 0.92);
@@ -184,11 +199,13 @@
    ============================================================ */
 
 .field {
-  display: grid;
-  gap: 0.2rem;
+  display: flex;
+  gap: 0.5rem;
   padding: 0.35rem 0.5rem;
   background: var(--dark);
   border: 2px solid var(--panel-border);
+  justify-content: center;
+  align-items: center;
 }
 
 .field span {
@@ -346,13 +363,17 @@ button:disabled {
    ============================================================ */
 
 .board-shell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   flex: 1;
-  min-height: 0;
+  min-height: 500px;
   padding: 0.4rem 0.6rem;
 }
 
 .board {
-  height: 100%;
+  height: 90%;
+  width: 90%;
   overflow: auto;
   border: 2px solid var(--panel-border);
   box-shadow:

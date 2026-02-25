@@ -836,21 +836,11 @@ function App() {
   return (
     <>
       <div className="parallax-bg" aria-hidden="true">
-        <div className="parallax-layer parallax-layer-1">
-          <img src={bg1} alt="" /><img src={bg1} alt="" />
-        </div>
-        <div className="parallax-layer parallax-layer-2">
-          <img src={bg2} alt="" /><img src={bg2} alt="" />
-        </div>
-        <div className="parallax-layer parallax-layer-3">
-          <img src={bg3} alt="" /><img src={bg3} alt="" />
-        </div>
-        <div className="parallax-layer parallax-layer-4">
-          <img src={bg4} alt="" /><img src={bg4} alt="" />
-        </div>
-        <div className="parallax-layer parallax-layer-5">
-          <img src={bg5} alt="" /><img src={bg5} alt="" />
-        </div>
+        <div className="parallax-layer parallax-layer-1" style={{ backgroundImage: `url(${bg1})` }} />
+        <div className="parallax-layer parallax-layer-2" style={{ backgroundImage: `url(${bg2})` }} />
+        <div className="parallax-layer parallax-layer-3" style={{ backgroundImage: `url(${bg3})` }} />
+        <div className="parallax-layer parallax-layer-4" style={{ backgroundImage: `url(${bg4})` }} />
+        <div className="parallax-layer parallax-layer-5" style={{ backgroundImage: `url(${bg5})` }} />
       </div>
     <main className="page">
       <header className="topbar">
