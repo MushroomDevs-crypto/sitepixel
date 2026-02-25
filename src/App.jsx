@@ -6,6 +6,11 @@ import { PublicKey, Transaction } from '@solana/web3.js'
 import { createTransferInstruction, getAssociatedTokenAddressSync, createAssociatedTokenAccountIdempotentInstruction, TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from '@solana/spl-token'
 import { TOKEN_MINT, RECEIVER_WALLET, PRICE_PER_PIXEL } from './solana-config'
 import { apiFetch, setToken, clearToken } from './api'
+import bg1 from './assets/bg/1.png'
+import bg2 from './assets/bg/2.png'
+import bg3 from './assets/bg/3.png'
+import bg4 from './assets/bg/4.png'
+import bg5 from './assets/bg/5.png'
 import './App.css'
 
 const GRID_SIZE = 1000
@@ -829,6 +834,24 @@ function App() {
   const shortWallet = walletAddress ? `${walletAddress.slice(0, 4)}...${walletAddress.slice(-4)}` : null
 
   return (
+    <>
+      <div className="parallax-bg" aria-hidden="true">
+        <div className="parallax-layer parallax-layer-1">
+          <img src={bg1} alt="" /><img src={bg1} alt="" />
+        </div>
+        <div className="parallax-layer parallax-layer-2">
+          <img src={bg2} alt="" /><img src={bg2} alt="" />
+        </div>
+        <div className="parallax-layer parallax-layer-3">
+          <img src={bg3} alt="" /><img src={bg3} alt="" />
+        </div>
+        <div className="parallax-layer parallax-layer-4">
+          <img src={bg4} alt="" /><img src={bg4} alt="" />
+        </div>
+        <div className="parallax-layer parallax-layer-5">
+          <img src={bg5} alt="" /><img src={bg5} alt="" />
+        </div>
+      </div>
     <main className="page">
       <header className="topbar">
         <div className="title-wrap">
@@ -967,6 +990,7 @@ function App() {
 
       <footer className="hint"><p>{status}</p></footer>
     </main>
+    </>
   )
 }
 
