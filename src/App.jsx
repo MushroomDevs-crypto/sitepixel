@@ -101,12 +101,12 @@ function App() {
   const [placedMedia, setPlacedMedia] = useState([])
   const [linkButtonDraft, setLinkButtonDraft] = useState(null)
   const [placedLinkButtons, setPlacedLinkButtons] = useState([])
-  const [linkButtonTextInput, setLinkButtonTextInput] = useState('Acessar')
+  const [linkButtonTextInput, setLinkButtonTextInput] = useState('Visit')
   const [linkButtonUrlInput, setLinkButtonUrlInput] = useState('https://')
 
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [walletIdMap, setWalletIdMap] = useState(new Map())
-  const [status, setStatus] = useState('Conecte sua carteira Solana para comecar.')
+  const [status, setStatus] = useState('Connect your Solana wallet to get started.')
   const [selectionCount, setSelectionCount] = useState(0)
   const [purchases, setPurchases] = useState([])
   const [ownersSnapshot, setOwnersSnapshot] = useState(() => new Int32Array(TOTAL_PIXELS))
@@ -138,7 +138,7 @@ function App() {
   const showOwnedBlink =
     highlightOwnedBlinkEnabled && myLocalId > 0 && activeAccountOwnedPixels > 0
   const brushSizeLabel = `${brushSize}x${brushSize}`
-  const brushShapeLabel = brushShape === BRUSH_SHAPES.circle ? 'Circular' : 'Quadrado'
+  const brushShapeLabel = brushShape === BRUSH_SHAPES.circle ? 'Circle' : 'Square'
   const activeAccountMedia = useMemo(
     () => placedMedia.filter((item) => item.wallet === walletAddress),
     [placedMedia, walletAddress],
@@ -236,29 +236,29 @@ function App() {
   const normalizedLinkButtonDraft = useMemo(() => normalizeRect(linkButtonDraft), [linkButtonDraft])
 
   const linkButtonDraftValidation = useMemo(() => {
-    if (!normalizedLinkButtonDraft) return { isValid: false, message: 'Crie um rascunho de botao para posicionar.' }
-    if (!myLocalId) return { isValid: false, message: 'Conecte sua carteira para inserir botao.' }
-    if (!canUseLinkButtons) return { isValid: false, message: `Botao bloqueado: minimo de ${MIN_PIXELS_FOR_LINK_BUTTON}px comprados (faltam ${pixelsMissingForLinkButtons}px).` }
-    if (!activeOwnedPrefix) return { isValid: false, message: 'Nao foi possivel validar sua area para o botao.' }
-    if (!normalizedLinkButtonDraft.text.trim()) return { isValid: false, message: 'Defina um texto para o botao.' }
+    if (!normalizedLinkButtonDraft) return { isValid: false, message: 'Create a button draft to position.' }
+    if (!myLocalId) return { isValid: false, message: 'Connect your wallet to insert a button.' }
+    if (!canUseLinkButtons) return { isValid: false, message: `Button locked: minimum ${MIN_PIXELS_FOR_LINK_BUTTON}px purchased (need ${pixelsMissingForLinkButtons}px more).` }
+    if (!activeOwnedPrefix) return { isValid: false, message: 'Could not validate your area for the button.' }
+    if (!normalizedLinkButtonDraft.text.trim()) return { isValid: false, message: 'Set a text for the button.' }
     const normalizedUrl = normalizeExternalUrl(normalizedLinkButtonDraft.url || '')
-    if (!normalizedUrl) return { isValid: false, message: 'Informe um link valido (http/https).' }
+    if (!normalizedUrl) return { isValid: false, message: 'Enter a valid link (http/https).' }
     const owned = countOwnedInRect(activeOwnedPrefix, normalizedLinkButtonDraft.x, normalizedLinkButtonDraft.y, normalizedLinkButtonDraft.width, normalizedLinkButtonDraft.height)
     const total = normalizedLinkButtonDraft.width * normalizedLinkButtonDraft.height
-    if (owned !== total) return { isValid: false, message: `Botao fora da sua propriedade. Faltam ${total - owned}px proprios nessa area.` }
-    return { isValid: true, message: 'Botao valido para inserir.' }
+    if (owned !== total) return { isValid: false, message: `Button outside your property. Need ${total - owned}px more in this area.` }
+    return { isValid: true, message: 'Button ready to insert.' }
   }, [normalizedLinkButtonDraft, myLocalId, canUseLinkButtons, pixelsMissingForLinkButtons, activeOwnedPrefix])
 
   const mediaDraftValidation = useMemo(() => {
-    if (!normalizedMediaDraft) return { isValid: false, message: 'Selecione um GIF ou imagem para posicionar.' }
-    if (!myLocalId) return { isValid: false, message: 'Conecte sua carteira para inserir GIF/imagem.' }
-    if (mediaSlotsRemaining <= 0) return { isValid: false, message: `Limite de imagens atingido. Faltam ${pixelsMissingForNextMedia}px comprados para liberar.` }
-    if (!canPlaceMediaByAreaRule) return { isValid: false, message: 'Regra 23x23: compre um bloco 23x23 para liberar.' }
-    if (!activeOwnedPrefix) return { isValid: false, message: 'Nao foi possivel validar sua area agora.' }
+    if (!normalizedMediaDraft) return { isValid: false, message: 'Select a GIF or image to position.' }
+    if (!myLocalId) return { isValid: false, message: 'Connect your wallet to insert a GIF/image.' }
+    if (mediaSlotsRemaining <= 0) return { isValid: false, message: `Image limit reached. Need ${pixelsMissingForNextMedia}px more to unlock.` }
+    if (!canPlaceMediaByAreaRule) return { isValid: false, message: '23x23 rule: buy a 23x23 block to unlock.' }
+    if (!activeOwnedPrefix) return { isValid: false, message: 'Could not validate your area right now.' }
     const owned = countOwnedInRect(activeOwnedPrefix, normalizedMediaDraft.x, normalizedMediaDraft.y, normalizedMediaDraft.width, normalizedMediaDraft.height)
     const total = normalizedMediaDraft.width * normalizedMediaDraft.height
-    if (owned !== total) return { isValid: false, message: `A area da midia sai da sua propriedade. Faltam ${total - owned} pixels proprios.` }
-    return { isValid: true, message: 'Posicao valida. Pode inserir o GIF/imagem.' }
+    if (owned !== total) return { isValid: false, message: `Media area extends outside your property. Need ${total - owned} more owned pixels.` }
+    return { isValid: true, message: 'Valid position. You can insert the GIF/image.' }
   }, [normalizedMediaDraft, myLocalId, mediaSlotsRemaining, pixelsMissingForNextMedia, canPlaceMediaByAreaRule, activeOwnedPrefix])
 
   // --- Canvas setup ---
@@ -318,9 +318,9 @@ function App() {
           }
           context.putImageData(imageData, 0, 0)
         }
-        updateStatus('Grid carregado. Conecte sua carteira para interagir.')
+        updateStatus('Grid loaded. Connect your wallet to interact.')
       } catch (err) {
-        updateStatus('Erro ao carregar grid: ' + err.message)
+        updateStatus('Error loading grid: ' + err.message)
       }
     }
     loadGrid()
@@ -335,7 +335,7 @@ function App() {
     }
     async function authenticate() {
       try {
-        const message = `Sign in to SitePixel\nWallet: ${publicKey.toBase58()}\nTimestamp: ${Date.now()}`
+        const message = `Sign in to CriptoPixel\nWallet: ${publicKey.toBase58()}\nTimestamp: ${Date.now()}`
         const encodedMessage = new TextEncoder().encode(message)
         const signature = await signMessage(encodedMessage)
         const { token } = await apiFetch('/auth', {
@@ -355,9 +355,9 @@ function App() {
           next.set(publicKey.toBase58(), maxId + 1)
           return next
         })
-        updateStatus(`Carteira conectada: ${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`)
+        updateStatus(`Connected wallet: ${publicKey.toBase58().slice(0, 4)}...${publicKey.toBase58().slice(-4)}`)
       } catch (err) {
-        updateStatus('Falha na autenticacao: ' + err.message)
+        updateStatus('Authentication failed: ' + err.message)
       }
     }
     authenticate()
@@ -388,7 +388,7 @@ function App() {
   const clearSelection = () => { selectionMaskRef.current.fill(0); selectionCountRef.current = 0; setSelectionCount(0); selectionContextRef.current?.clearRect(0, 0, GRID_SIZE, GRID_SIZE) }
 
   const toggleOwnedBlink = () => {
-    setHighlightOwnedBlinkEnabled((v) => { updateStatus(!v ? 'Pisca-pisca ativado.' : 'Pisca-pisca desativado.'); return !v })
+    setHighlightOwnedBlinkEnabled((v) => { updateStatus(!v ? 'Blink activated.' : 'Blink deactivated.'); return !v })
   }
 
   const clearMediaDraft = () => { setMediaDraft(null); mediaDragOffsetRef.current = { x: 0, y: 0 }; mediaInteractionRef.current = null }
@@ -437,24 +437,24 @@ function App() {
     const file = event.target.files?.[0]
     if (!file) return
     event.target.value = ''
-    if (!myLocalId) { updateStatus('Conecte sua carteira antes de carregar GIF/imagem.'); return }
-    if (!canPlaceMediaByAreaRule || !firstValidMediaAnchor) { updateStatus('Regra 23x23: compre um bloco 23x23 antes.'); return }
-    if (mediaSlotsRemaining <= 0) { updateStatus('Limite de imagens atingido.'); return }
+    if (!myLocalId) { updateStatus('Connect your wallet before uploading a GIF/image.'); return }
+    if (!canPlaceMediaByAreaRule || !firstValidMediaAnchor) { updateStatus('23x23 rule: buy a 23x23 block first.'); return }
+    if (mediaSlotsRemaining <= 0) { updateStatus('Image limit reached.'); return }
     const fileUrl = URL.createObjectURL(file)
     const image = new Image()
     image.onload = () => {
       setMediaDraft(normalizeMediaRect({ id: `draft-${Date.now()}`, fileName: file.name, mimeType: file.type, url: fileUrl, fileObject: file, width: MIN_MEDIA_SIDE, height: MIN_MEDIA_SIDE, x: firstValidMediaAnchor.x, y: firstValidMediaAnchor.y }))
       switchTool(TOOLS.media)
       clearBrushPreview()
-      updateStatus('GIF/imagem carregado. Arraste para posicionar.')
+      updateStatus('GIF/image loaded. Drag to position.')
     }
-    image.onerror = () => { URL.revokeObjectURL(fileUrl); updateStatus('Nao foi possivel ler essa imagem/GIF.') }
+    image.onerror = () => { URL.revokeObjectURL(fileUrl); updateStatus('Could not read this image/GIF.') }
     image.src = fileUrl
   }
 
   const insertMediaAtDraft = async () => {
-    if (!normalizedMediaDraft) { updateStatus('Carregue um GIF/imagem primeiro.'); return }
-    if (mediaSlotsRemaining <= 0) { updateStatus('Limite de imagens atingido.'); return }
+    if (!normalizedMediaDraft) { updateStatus('Upload a GIF/image first.'); return }
+    if (mediaSlotsRemaining <= 0) { updateStatus('Image limit reached.'); return }
     if (!mediaDraftValidation.isValid) { updateStatus(mediaDraftValidation.message); return }
     try {
       const formData = new FormData()
@@ -465,19 +465,19 @@ function App() {
       formData.append('height', normalizedMediaDraft.height)
       const result = await apiFetch('/media', { method: 'POST', body: formData })
       setPlacedMedia((prev) => [result.media, ...prev])
-      updateStatus(`GIF/imagem inserido em ${normalizedMediaDraft.width}x${normalizedMediaDraft.height} pixels.`)
-    } catch (err) { updateStatus('Erro ao inserir midia: ' + err.message) }
+      updateStatus(`GIF/image inserted at ${normalizedMediaDraft.width}x${normalizedMediaDraft.height} pixels.`)
+    } catch (err) { updateStatus('Error inserting media: ' + err.message) }
   }
 
   const removeLastMediaFromActiveAccount = async () => {
-    if (!walletAddress) { updateStatus('Conecte sua carteira.'); return }
+    if (!walletAddress) { updateStatus('Connect your wallet.'); return }
     const my = placedMedia.filter((i) => i.wallet === walletAddress)
-    if (my.length === 0) { updateStatus('Nao existe midia para remover.'); return }
+    if (my.length === 0) { updateStatus('No media to remove.'); return }
     try {
       await apiFetch(`/media/${my[0].id}`, { method: 'DELETE' })
       setPlacedMedia((prev) => prev.filter((i) => i.id !== my[0].id))
-      updateStatus('Midia removida.')
-    } catch (err) { updateStatus('Erro: ' + err.message) }
+      updateStatus('Media removed.')
+    } catch (err) { updateStatus('Error: ' + err.message) }
   }
 
   const clearLinkButtonDraft = () => { setLinkButtonDraft(null); linkButtonInteractionRef.current = null }
@@ -486,37 +486,37 @@ function App() {
   const updateLinkButtonDraftUrl = (u) => { setLinkButtonUrlInput(u); setLinkButtonDraft((d) => d ? { ...d, url: u } : d) }
 
   const createLinkButtonDraft = () => {
-    if (!myLocalId) { updateStatus('Conecte sua carteira.'); return }
-    if (!canUseLinkButtons) { updateStatus(`Botao bloqueado: minimo ${MIN_PIXELS_FOR_LINK_BUTTON}px.`); return }
+    if (!myLocalId) { updateStatus('Connect your wallet.'); return }
+    if (!canUseLinkButtons) { updateStatus(`Button locked: minimum ${MIN_PIXELS_FOR_LINK_BUTTON}px.`); return }
     const anchor = findFirstOwnedRect(DEFAULT_LINK_BUTTON_WIDTH, DEFAULT_LINK_BUTTON_HEIGHT) || findFirstOwnedRect(1, 1)
-    if (!anchor) { updateStatus('Sem espaco proprio para o botao.'); return }
-    setLinkButtonDraft(normalizeRect({ x: anchor.x, y: anchor.y, width: DEFAULT_LINK_BUTTON_WIDTH, height: DEFAULT_LINK_BUTTON_HEIGHT, text: linkButtonTextInput.trim() || 'Acessar', url: linkButtonUrlInput.trim() || 'https://' }))
+    if (!anchor) { updateStatus('No owned space for the button.'); return }
+    setLinkButtonDraft(normalizeRect({ x: anchor.x, y: anchor.y, width: DEFAULT_LINK_BUTTON_WIDTH, height: DEFAULT_LINK_BUTTON_HEIGHT, text: linkButtonTextInput.trim() || 'Visit', url: linkButtonUrlInput.trim() || 'https://' }))
     switchTool(TOOLS.linkButton)
     clearBrushPreview()
-    updateStatus('Rascunho de botao criado. Arraste e redimensione.')
+    updateStatus('Button draft created. Drag and resize.')
   }
 
   const insertLinkButtonAtDraft = async () => {
-    if (!normalizedLinkButtonDraft) { updateStatus('Crie um rascunho de botao primeiro.'); return }
+    if (!normalizedLinkButtonDraft) { updateStatus('Create a button draft first.'); return }
     if (!linkButtonDraftValidation.isValid) { updateStatus(linkButtonDraftValidation.message); return }
     const normalizedUrl = normalizeExternalUrl(normalizedLinkButtonDraft.url || '')
-    if (!normalizedUrl) { updateStatus('Link invalido.'); return }
+    if (!normalizedUrl) { updateStatus('Invalid link.'); return }
     try {
       const result = await apiFetch('/link-buttons', { method: 'POST', body: JSON.stringify({ x: normalizedLinkButtonDraft.x, y: normalizedLinkButtonDraft.y, width: normalizedLinkButtonDraft.width, height: normalizedLinkButtonDraft.height, text: normalizedLinkButtonDraft.text.trim(), url: normalizedUrl }) })
       setPlacedLinkButtons((prev) => [result.linkButton, ...prev])
-      updateStatus('Botao inserido.')
-    } catch (err) { updateStatus('Erro: ' + err.message) }
+      updateStatus('Button inserted.')
+    } catch (err) { updateStatus('Error: ' + err.message) }
   }
 
   const removeLastLinkButtonFromActiveAccount = async () => {
-    if (!walletAddress) { updateStatus('Conecte sua carteira.'); return }
+    if (!walletAddress) { updateStatus('Connect your wallet.'); return }
     const my = placedLinkButtons.filter((i) => i.wallet === walletAddress)
-    if (my.length === 0) { updateStatus('Sem botao para remover.'); return }
+    if (my.length === 0) { updateStatus('No button to remove.'); return }
     try {
       await apiFetch(`/link-buttons/${my[0].id}`, { method: 'DELETE' })
       setPlacedLinkButtons((prev) => prev.filter((i) => i.id !== my[0].id))
-      updateStatus('Botao removido.')
-    } catch (err) { updateStatus('Erro: ' + err.message) }
+      updateStatus('Button removed.')
+    } catch (err) { updateStatus('Error: ' + err.message) }
   }
 
   const handleLinkButtonDraftPointerDown = (event) => {
@@ -635,7 +635,7 @@ function App() {
     })
     if (changed > 0) { syncSelectionCountState(); return }
     if (blocked === 0 || blockedSelectionNoticeRef.current) return
-    updateStatus('Area do pincel sem pixels livres.')
+    updateStatus('Brush area has no free pixels.')
     blockedSelectionNoticeRef.current = true
   }
 
@@ -645,13 +645,13 @@ function App() {
     if (buffer.length === 0) return
     paintBufferRef.current = []
     try { await apiFetch('/paint', { method: 'POST', body: JSON.stringify({ pixels: buffer }) }) }
-    catch (err) { updateStatus('Erro ao salvar pintura: ' + err.message) }
+    catch (err) { updateStatus('Error saving paint: ' + err.message) }
   }, [])
 
   const paintWithBrush = (event) => {
     const ctx = contextRef.current
     if (!ctx) return
-    if (!myLocalId) { updateStatus('Conecte sua carteira para pintar.'); return }
+    if (!myLocalId) { updateStatus('Connect your wallet to paint.'); return }
     const point = getCanvasPoint(event)
     if (!point) return
     const nextColor = hexToInt(brushColor)
@@ -668,19 +668,19 @@ function App() {
     })
     if (painted > 0) { clearTimeout(paintFlushTimerRef.current); paintFlushTimerRef.current = setTimeout(flushPaintBuffer, 300); return }
     if (blocked === 0 || blockedPaintNoticeRef.current) return
-    updateStatus('Pincel atingiu apenas pixels bloqueados ou nao comprados.')
+    updateStatus('Brush only reached blocked or unpurchased pixels.')
     blockedPaintNoticeRef.current = true
   }
 
   const startSelecting = (event) => {
-    if (!myLocalId) { updateStatus('Conecte sua carteira.'); return }
+    if (!myLocalId) { updateStatus('Connect your wallet.'); return }
     const point = getCanvasPoint(event)
     if (!point) return
     const action = resolveSelectionAction(point)
     if (action.shouldSelect === null) {
-      if (action.otherBlockedCount > 0) updateStatus('Pixels de outras carteiras.')
-      else if (action.ownBlockedCount > 0) updateStatus('Voce ja comprou esses pixels.')
-      else updateStatus('Nao ha pixels livres aqui.')
+      if (action.otherBlockedCount > 0) updateStatus('Pixels owned by other wallets.')
+      else if (action.ownBlockedCount > 0) updateStatus('You already own these pixels.')
+      else updateStatus('No free pixels here.')
       return
     }
     selectActionRef.current = action.shouldSelect
@@ -698,7 +698,7 @@ function App() {
   }
 
   const startPainting = (event) => {
-    if (!myLocalId) { updateStatus('Conecte sua carteira.'); return }
+    if (!myLocalId) { updateStatus('Connect your wallet.'); return }
     dragToolRef.current = TOOLS.paint
     blockedPaintNoticeRef.current = false
     event.currentTarget.setPointerCapture?.(event.pointerId)
@@ -708,9 +708,9 @@ function App() {
   const keepPainting = (event) => { if (dragToolRef.current !== TOOLS.paint) return; paintWithBrush(event) }
 
   const startMediaPositioning = (event) => {
-    if (!myLocalId) { updateStatus('Conecte sua carteira.'); return }
-    if (!canPlaceMediaByAreaRule) { updateStatus('Regra 23x23 nao atendida.'); return }
-    if (!normalizedMediaDraft) { updateStatus('Carregue um GIF/imagem primeiro.'); return }
+    if (!myLocalId) { updateStatus('Connect your wallet.'); return }
+    if (!canPlaceMediaByAreaRule) { updateStatus('23x23 rule not met.'); return }
+    if (!normalizedMediaDraft) { updateStatus('Upload a GIF/image first.'); return }
     const point = getCanvasPoint(event)
     if (!point) return
     const inside = point.x >= normalizedMediaDraft.x && point.x < normalizedMediaDraft.x + normalizedMediaDraft.width && point.y >= normalizedMediaDraft.y && point.y < normalizedMediaDraft.y + normalizedMediaDraft.height
@@ -749,7 +749,7 @@ function App() {
     dragToolRef.current = null
     selectActionRef.current = null
     event.currentTarget.releasePointerCapture?.(event.pointerId)
-    if (tool === TOOLS.select) updateStatus(`Selecao: ${selectionCountRef.current} pixels = ${selectionCountRef.current} tokens`)
+    if (tool === TOOLS.select) updateStatus(`Selection: ${selectionCountRef.current} pixels = ${selectionCountRef.current} tokens`)
     if (wasPaint) flushPaintBuffer()
     mediaDragOffsetRef.current = { x: 0, y: 0 }
   }
@@ -758,7 +758,7 @@ function App() {
   const handlePointerLeave = (event) => { stopInteraction(event); clearBrushPreview() }
 
   const clearMyColors = async () => {
-    if (!myLocalId) { updateStatus('Conecte sua carteira.'); return }
+    if (!myLocalId) { updateStatus('Connect your wallet.'); return }
     try {
       const result = await apiFetch('/paint/clear', { method: 'POST' })
       const ctx = contextRef.current
@@ -770,25 +770,25 @@ function App() {
           ctx.fillRect(i % GRID_SIZE, Math.floor(i / GRID_SIZE), 1, 1)
         }
       }
-      updateStatus(`Limpos ${result.cleared} pixels.`)
-    } catch (err) { updateStatus('Erro: ' + err.message) }
+      updateStatus(`Cleared ${result.cleared} pixels.`)
+    } catch (err) { updateStatus('Error: ' + err.message) }
   }
 
   // --- Buy pixels with Solana token transfer ---
   const buySelectedPixels = async () => {
-    if (!walletAddress || !isAuthenticated) { updateStatus('Conecte e autentique sua carteira.'); return }
-    if (selectionCountRef.current === 0) { updateStatus('Selecione pelo menos 1 pixel.'); return }
-    if (!signTransaction) { updateStatus('Carteira nao suporta assinatura de transacoes.'); return }
+    if (!walletAddress || !isAuthenticated) { updateStatus('Connect and authenticate your wallet.'); return }
+    if (selectionCountRef.current === 0) { updateStatus('Select at least 1 pixel.'); return }
+    if (!signTransaction) { updateStatus('Wallet does not support transaction signing.'); return }
 
     const selectedPixels = []
     for (let i = 0; i < TOTAL_PIXELS; i++) {
       if (selectionMaskRef.current[i] !== 1 || ownersRef.current[i] !== 0) continue
       selectedPixels.push({ x: i % GRID_SIZE, y: Math.floor(i / GRID_SIZE) })
     }
-    if (selectedPixels.length === 0) { clearSelection(); updateStatus('Nenhum pixel disponivel na selecao.'); return }
+    if (selectedPixels.length === 0) { clearSelection(); updateStatus('No available pixels in selection.'); return }
 
     setBuying(true)
-    updateStatus(`Construindo transacao para ${selectedPixels.length} pixels...`)
+    updateStatus(`Building transaction for ${selectedPixels.length} pixels...`)
 
     try {
       const amount = selectedPixels.length * PRICE_PER_PIXEL
@@ -805,16 +805,16 @@ function App() {
       }
       tx.add(createTransferInstruction(senderATA, receiverATA, publicKey, amount, [], TOKEN_2022_PROGRAM_ID))
 
-      updateStatus('Assine a transacao na sua carteira...')
+      updateStatus('Sign the transaction in your wallet...')
       const signed = await signTransaction(tx)
 
-      updateStatus('Enviando transacao...')
+      updateStatus('Sending transaction...')
       const sig = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: false, preflightCommitment: 'confirmed' })
 
-      updateStatus(`Tx enviada (${sig.slice(0, 8)}...). Aguardando confirmacao...`)
+      updateStatus(`Tx sent (${sig.slice(0, 8)}...). Awaiting confirmation...`)
       await connection.confirmTransaction({ signature: sig, blockhash, lastValidBlockHeight }, 'confirmed')
 
-      updateStatus('Tx confirmada. Registrando compra...')
+      updateStatus('Tx confirmed. Recording purchase...')
       const result = await apiFetch('/purchase', { method: 'POST', body: JSON.stringify({ txSignature: sig, pixels: selectedPixels }) })
 
       // Update local state
@@ -823,10 +823,10 @@ function App() {
       setOwnersSnapshot(new Int32Array(ownersRef.current))
       setPurchases((prev) => [{ txSignature: sig, pixelCount: result.pixelCount }, ...prev])
       clearSelection()
-      updateStatus(`Compra concluida: ${result.pixelCount} pixels!` + (result.unavailable?.length > 0 ? ` (${result.unavailable.length} ja ocupados)` : ''))
+      updateStatus(`Purchase complete: ${result.pixelCount} pixels!` + (result.unavailable?.length > 0 ? ` (${result.unavailable.length} already taken)` : ''))
     } catch (err) {
-      if (err.message?.includes('User rejected')) updateStatus('Transacao cancelada.')
-      else updateStatus('Erro na compra: ' + err.message)
+      if (err.message?.includes('User rejected')) updateStatus('Transaction cancelled.')
+      else updateStatus('Error during purchase: ' + err.message)
     } finally { setBuying(false) }
   }
 
@@ -845,67 +845,67 @@ function App() {
     <main className="page">
       <header className="topbar">
         <div className="title-wrap">
-          <h1>Site Pixel</h1>
-          <p>1.000.000 de quadradinhos (1000 x 1000) — 1 token por pixel, pago com Solana.</p>
+          <h1>Cripto Pixel</h1>
+          <p>1,000,000 pixels (1000 x 1000) — 1 token per pixel, paid with Solana.</p>
         </div>
 
         <div className="account-panel">
           <WalletMultiButton />
           {walletAddress ? (
-            <p className="account-stats">{shortWallet} — {activeAccountOwnedPixels} pixels comprados{isAuthenticated ? '' : ' (autenticando...)'}</p>
+            <p className="account-stats">{shortWallet} — {activeAccountOwnedPixels} pixels owned{isAuthenticated ? '' : ' (authenticating...)'}</p>
           ) : (
-            <p className="account-stats">Conecte sua carteira Solana para comecar.</p>
+            <p className="account-stats">Connect your Solana wallet to get started.</p>
           )}
         </div>
 
         <div className="controls">
           <div className="tool-group">
-            <button type="button" className={tool === TOOLS.select ? 'active-tool' : ''} onClick={() => switchTool(TOOLS.select)}>Selecionar para comprar</button>
-            <button type="button" className={tool === TOOLS.paint ? 'active-tool' : ''} onClick={() => switchTool(TOOLS.paint)}>Pintar meus pixels</button>
-            <button type="button" className={tool === TOOLS.media ? 'active-tool' : ''} onClick={() => switchTool(TOOLS.media)}>Posicionar GIF/Imagem</button>
-            <button type="button" className={tool === TOOLS.linkButton ? 'active-tool' : ''} onClick={() => switchTool(TOOLS.linkButton)}>Posicionar Botao</button>
-            <button type="button" className={showOwnedBlink ? 'active-tool' : ''} onClick={toggleOwnedBlink} disabled={!myLocalId || activeAccountOwnedPixels === 0}>{showOwnedBlink ? 'Parar pisca-pisca' : 'Piscar meus pixels'}</button>
+            <button type="button" className={tool === TOOLS.select ? 'active-tool' : ''} onClick={() => switchTool(TOOLS.select)}>Select to buy</button>
+            <button type="button" className={tool === TOOLS.paint ? 'active-tool' : ''} onClick={() => switchTool(TOOLS.paint)}>Paint my pixels</button>
+            <button type="button" className={tool === TOOLS.media ? 'active-tool' : ''} onClick={() => switchTool(TOOLS.media)}>Place GIF/Image</button>
+            <button type="button" className={tool === TOOLS.linkButton ? 'active-tool' : ''} onClick={() => switchTool(TOOLS.linkButton)}>Place Button</button>
+            <button type="button" className={showOwnedBlink ? 'active-tool' : ''} onClick={toggleOwnedBlink} disabled={!myLocalId || activeAccountOwnedPixels === 0}>{showOwnedBlink ? 'Stop blinking' : 'Blink my pixels'}</button>
           </div>
 
-          <label className="field"><span>Cor</span><input type="color" value={brushColor} onChange={(e) => setBrushColor(e.target.value)} /></label>
-          <button type="button" onClick={() => setBrushColor(WHITE_HEX)}>Borracha</button>
+          <label className="field"><span>Color</span><input type="color" value={brushColor} onChange={(e) => setBrushColor(e.target.value)} /></label>
+          <button type="button" onClick={() => setBrushColor(WHITE_HEX)}>Eraser</button>
 
           <label className="field brush-field">
-            <span>Pincel: {brushShapeLabel} {brushSizeLabel}</span>
+            <span>Brush: {brushShapeLabel} {brushSizeLabel}</span>
             <select value={brushShape} onChange={(e) => setBrushShape(e.target.value)}>
-              <option value={BRUSH_SHAPES.square}>Quadrado</option>
-              <option value={BRUSH_SHAPES.circle}>Circular</option>
+              <option value={BRUSH_SHAPES.square}>Square</option>
+              <option value={BRUSH_SHAPES.circle}>Circle</option>
             </select>
             <input type="range" min={MIN_BRUSH_SIZE} max={MAX_BRUSH_SIZE} step="1" value={brushSize} onChange={(e) => setBrushSize(clamp(Number(e.target.value), MIN_BRUSH_SIZE, MAX_BRUSH_SIZE))} />
           </label>
 
           <label className="field zoom-field">
             <span>Zoom: {zoom}x</span>
-            <input type="range" min="1" max="20" step="1" value={zoom} onChange={(e) => setZoom(clamp(Number(e.target.value), 1, 20))} />
+            <input type="range" min="2" max="20" step="1" value={zoom} onChange={(e) => setZoom(clamp(Number(e.target.value), 2, 20))} />
           </label>
 
           <div className="field purchase-box">
-            <span>Compra atual</span>
-            <p className="purchase-summary">{selectionCount} pixels selecionados | Total: {selectionCount} tokens</p>
+            <span>Current purchase</span>
+            <p className="purchase-summary">{selectionCount} pixels selected | Total: {selectionCount} tokens</p>
             <div className="purchase-actions">
-              <button type="button" onClick={clearSelection} disabled={selectionCount === 0}>Limpar selecao</button>
-              <button type="button" className="danger" onClick={buySelectedPixels} disabled={!isAuthenticated || selectionCount === 0 || buying}>{buying ? 'Comprando...' : 'Comprar selecao'}</button>
+              <button type="button" onClick={clearSelection} disabled={selectionCount === 0}>Clear selection</button>
+              <button type="button" className="danger" onClick={buySelectedPixels} disabled={!isAuthenticated || selectionCount === 0 || buying}>{buying ? 'Buying...' : 'Buy selection'}</button>
             </div>
           </div>
 
           <div className="field media-field">
-            <span>Midia GIF/Imagem</span>
+            <span>GIF/Image Media</span>
             <input type="file" accept="image/gif,image/*" onChange={handleMediaFileChange} disabled={!myLocalId || !canPlaceMediaByAreaRule || mediaSlotsRemaining <= 0} />
-            <p className="media-meta">{canPlaceMediaByAreaRule ? 'Regra 23x23 liberada.' : 'Regra 23x23 bloqueada: compre um bloco 23x23.'}</p>
-            <p className="media-meta">Cotas: {mediaSlotsUsed}/{mediaSlotCapacity} usadas.</p>
-            {myLocalId > 0 && <p className={`media-meta ${mediaSlotsRemaining > 0 ? 'media-ok' : 'media-error'}`}>{mediaSlotsRemaining > 0 ? `Pode inserir ${mediaSlotsRemaining} imagem(ns).` : `Limite atingido. Faltam ${pixelsMissingForNextMedia}px.`}</p>}
+            <p className="media-meta">{canPlaceMediaByAreaRule ? '23x23 rule unlocked.' : '23x23 rule locked: buy a 23x23 block.'}</p>
+            <p className="media-meta">Slots: {mediaSlotsUsed}/{mediaSlotCapacity} used.</p>
+            {myLocalId > 0 && <p className={`media-meta ${mediaSlotsRemaining > 0 ? 'media-ok' : 'media-error'}`}>{mediaSlotsRemaining > 0 ? `Can insert ${mediaSlotsRemaining} image(s).` : `Limit reached. Need ${pixelsMissingForNextMedia}px more.`}</p>}
             {normalizedMediaDraft && (
               <>
-                <p className="media-meta">Arquivo: {normalizedMediaDraft.fileName} | ({normalizedMediaDraft.x},{normalizedMediaDraft.y}) | {normalizedMediaDraft.width}x{normalizedMediaDraft.height}</p>
+                <p className="media-meta">File: {normalizedMediaDraft.fileName} | ({normalizedMediaDraft.x},{normalizedMediaDraft.y}) | {normalizedMediaDraft.width}x{normalizedMediaDraft.height}</p>
                 <div className="purchase-actions">
-                  <button type="button" onClick={insertMediaAtDraft} disabled={!mediaDraftValidation.isValid}>Inserir</button>
-                  <button type="button" onClick={clearMediaDraft}>Cancelar</button>
-                  <button type="button" onClick={removeLastMediaFromActiveAccount} disabled={activeAccountMedia.length === 0}>Remover ultima</button>
+                  <button type="button" onClick={insertMediaAtDraft} disabled={!mediaDraftValidation.isValid}>Insert</button>
+                  <button type="button" onClick={clearMediaDraft}>Cancel</button>
+                  <button type="button" onClick={removeLastMediaFromActiveAccount} disabled={activeAccountMedia.length === 0}>Remove last</button>
                 </div>
                 <p className={`media-meta ${mediaDraftValidation.isValid ? 'media-ok' : 'media-error'}`}>{mediaDraftValidation.message}</p>
               </>
@@ -913,30 +913,30 @@ function App() {
           </div>
 
           <div className="field button-field">
-            <span>Botao com Link</span>
-            <p className={`media-meta ${canUseLinkButtons ? 'media-ok' : 'media-error'}`}>{canUseLinkButtons ? `Liberado (${activeAccountOwnedPixels}px).` : `Minimo ${MIN_PIXELS_FOR_LINK_BUTTON}px (faltam ${pixelsMissingForLinkButtons}px).`}</p>
-            <label className="field inline-field"><span>Texto</span><input type="text" value={linkButtonTextInput} onChange={(e) => updateLinkButtonDraftText(e.target.value)} maxLength={60} placeholder="Ex: Visitar site" /></label>
-            <label className="field inline-field"><span>Link</span><input type="text" value={linkButtonUrlInput} onChange={(e) => updateLinkButtonDraftUrl(e.target.value)} placeholder="https://seusite.com" /></label>
+            <span>Link Button</span>
+            <p className={`media-meta ${canUseLinkButtons ? 'media-ok' : 'media-error'}`}>{canUseLinkButtons ? `Unlocked (${activeAccountOwnedPixels}px).` : `Minimum ${MIN_PIXELS_FOR_LINK_BUTTON}px (need ${pixelsMissingForLinkButtons}px more).`}</p>
+            <label className="field inline-field"><span>Text</span><input type="text" value={linkButtonTextInput} onChange={(e) => updateLinkButtonDraftText(e.target.value)} maxLength={60} placeholder="E.g.: Visit site" /></label>
+            <label className="field inline-field"><span>Link</span><input type="text" value={linkButtonUrlInput} onChange={(e) => updateLinkButtonDraftUrl(e.target.value)} placeholder="https://yoursite.com" /></label>
             <div className="purchase-actions">
-              <button type="button" onClick={createLinkButtonDraft} disabled={!myLocalId || !canUseLinkButtons}>Criar rascunho</button>
-              <button type="button" onClick={insertLinkButtonAtDraft} disabled={!normalizedLinkButtonDraft || !linkButtonDraftValidation.isValid}>Inserir</button>
-              <button type="button" onClick={clearLinkButtonDraft} disabled={!normalizedLinkButtonDraft}>Cancelar</button>
-              <button type="button" onClick={removeLastLinkButtonFromActiveAccount} disabled={activeAccountLinkButtons.length === 0}>Remover ultimo</button>
+              <button type="button" onClick={createLinkButtonDraft} disabled={!myLocalId || !canUseLinkButtons}>Create draft</button>
+              <button type="button" onClick={insertLinkButtonAtDraft} disabled={!normalizedLinkButtonDraft || !linkButtonDraftValidation.isValid}>Insert</button>
+              <button type="button" onClick={clearLinkButtonDraft} disabled={!normalizedLinkButtonDraft}>Cancel</button>
+              <button type="button" onClick={removeLastLinkButtonFromActiveAccount} disabled={activeAccountLinkButtons.length === 0}>Remove last</button>
             </div>
             {normalizedLinkButtonDraft && (
               <>
-                <p className="media-meta">Rascunho: ({normalizedLinkButtonDraft.x},{normalizedLinkButtonDraft.y}) | {normalizedLinkButtonDraft.width}x{normalizedLinkButtonDraft.height}</p>
+                <p className="media-meta">Draft: ({normalizedLinkButtonDraft.x},{normalizedLinkButtonDraft.y}) | {normalizedLinkButtonDraft.width}x{normalizedLinkButtonDraft.height}</p>
                 <p className={`media-meta ${linkButtonDraftValidation.isValid ? 'media-ok' : 'media-error'}`}>{linkButtonDraftValidation.message}</p>
               </>
             )}
           </div>
 
-          <button type="button" onClick={clearMyColors} disabled={!myLocalId}>Limpar minhas cores</button>
+          <button type="button" onClick={clearMyColors} disabled={!myLocalId}>Clear my colors</button>
         </div>
       </header>
 
       <section className="board-shell">
-        <div className="board" role="application" aria-label="Quadro de pixels">
+        <div className="board" role="application" aria-label="Pixel board">
           <div className="canvas-stack" style={canvasStackStyle}>
             <canvas ref={canvasRef} className="pixel-canvas" style={{ width: canvasStyleSize, height: canvasStyleSize }} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={stopInteraction} onPointerCancel={handlePointerCancel} onPointerLeave={handlePointerLeave} onContextMenu={(e) => e.preventDefault()} />
             <canvas ref={ownedHighlightCanvasRef} className={`owned-highlight-canvas ${showOwnedBlink ? 'blink-active' : ''}`} style={{ width: canvasStyleSize, height: canvasStyleSize }} />
@@ -954,7 +954,7 @@ function App() {
             ))}
             {normalizedLinkButtonDraft && (
               <div className={`link-button-draft ${linkButtonDraftValidation.isValid ? 'link-button-valid' : 'link-button-invalid'}`} style={{ left: `${(normalizedLinkButtonDraft.x / GRID_SIZE) * 100}%`, top: `${(normalizedLinkButtonDraft.y / GRID_SIZE) * 100}%`, width: `${(normalizedLinkButtonDraft.width / GRID_SIZE) * 100}%`, height: `${(normalizedLinkButtonDraft.height / GRID_SIZE) * 100}%` }} onPointerDown={handleLinkButtonDraftPointerDown} onPointerMove={handleLinkButtonDraftPointerMove} onPointerUp={endLinkButtonDraftInteraction} onPointerCancel={endLinkButtonDraftInteraction}>
-                <span className="link-button-draft-text">{normalizedLinkButtonDraft.text || 'Botao'}</span>
+                <span className="link-button-draft-text">{normalizedLinkButtonDraft.text || 'Button'}</span>
                 {['nw','n','ne','e','se','s','sw','w'].map((h) => <span key={h} className={`media-handle media-handle-${h}`} data-handle={h} />)}
               </div>
             )}
@@ -966,9 +966,9 @@ function App() {
       </section>
 
       <section className="history">
-        <h2>Historico de compras</h2>
-        {!walletAddress && <p>Conecte sua carteira para ver compras.</p>}
-        {walletAddress && purchases.length === 0 && <p>Nenhuma compra registrada.</p>}
+        <h2>Purchase history</h2>
+        {!walletAddress && <p>Connect your wallet to view purchases.</p>}
+        {walletAddress && purchases.length === 0 && <p>No purchases recorded.</p>}
         {walletAddress && purchases.length > 0 && (
           <ul>
             {purchases.slice(0, 8).map((p, i) => (

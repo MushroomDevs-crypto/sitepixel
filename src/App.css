@@ -25,14 +25,14 @@
 
 #root {
   height: 100vh;
-  overflow: hidden;
+  
 }
 
 .page {
   position: relative;
   z-index: 1;
   height: 100vh;
-  overflow: hidden;
+  
   display: flex;
   flex-direction: column;
   color: var(--text);
