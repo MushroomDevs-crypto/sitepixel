@@ -3,7 +3,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useConnection } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { PublicKey, Transaction } from '@solana/web3.js'
-import { createTransferInstruction, getAssociatedTokenAddressSync } from '@solana/spl-token'
+import { createTransferInstruction, getAssociatedTokenAddressSync, createAssociatedTokenAccountIdempotentInstruction } from '@solana/spl-token'
 import { TOKEN_MINT, RECEIVER_WALLET, PRICE_PER_PIXEL } from './solana-config'
 import { apiFetch, setToken, clearToken } from './api'
 import './App.css'
@@ -789,9 +789,13 @@ function App() {
       const amount = selectedPixels.length * PRICE_PER_PIXEL
       const senderATA = getAssociatedTokenAddressSync(TOKEN_MINT_PUBKEY, publicKey)
       const receiverATA = getAssociatedTokenAddressSync(TOKEN_MINT_PUBKEY, RECEIVER_PUBKEY)
-      const ix = createTransferInstruction(senderATA, receiverATA, publicKey, amount)
+
       const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized')
-      const tx = new Transaction({ blockhash, lastValidBlockHeight, feePayer: publicKey }).add(ix)
+      const tx = new Transaction({ blockhash, lastValidBlockHeight, feePayer: publicKey })
+
+      // Create receiver ATA if it doesn't exist (idempotent — no-op if already exists)
+      tx.add(createAssociatedTokenAccountIdempotentInstruction(publicKey, receiverATA, RECEIVER_PUBKEY, TOKEN_MINT_PUBKEY))
+      tx.add(createTransferInstruction(senderATA, receiverATA, publicKey, amount))
 
       updateStatus('Assine a transacao na sua carteira...')
       const signed = await signTransaction(tx)
