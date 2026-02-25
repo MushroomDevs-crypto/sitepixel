@@ -76,6 +76,7 @@ function App() {
   const mediaDragOffsetRef = useRef({ x: 0, y: 0 })
   const mediaInteractionRef = useRef(null)
   const linkButtonInteractionRef = useRef(null)
+  const fileInputRef = useRef(null)
 
   const pixelsRef = useRef(new Uint32Array(TOTAL_PIXELS).fill(WHITE_INT))
   const ownersRef = useRef(new Int32Array(TOTAL_PIXELS))
@@ -895,7 +896,11 @@ function App() {
 
           <div className="field media-field">
             <span>GIF/Image Media</span>
-            <input type="file" accept="image/gif,image/*" onChange={handleMediaFileChange} disabled={!myLocalId || !canPlaceMediaByAreaRule || mediaSlotsRemaining <= 0} />
+            <input ref={fileInputRef} type="file" accept="image/gif,image/*" onChange={handleMediaFileChange} style={{ display: 'none' }} />
+            <div className="file-input-row">
+              <button type="button" onClick={() => fileInputRef.current?.click()} disabled={!myLocalId || !canPlaceMediaByAreaRule || mediaSlotsRemaining <= 0}>Choose file</button>
+              <span className="file-name-display">{normalizedMediaDraft?.fileName ?? 'No file chosen'}</span>
+            </div>
             <p className="media-meta">{canPlaceMediaByAreaRule ? '23x23 rule unlocked.' : '23x23 rule locked: buy a 23x23 block.'}</p>
             <p className="media-meta">Slots: {mediaSlotsUsed}/{mediaSlotCapacity} used.</p>
             {myLocalId > 0 && <p className={`media-meta ${mediaSlotsRemaining > 0 ? 'media-ok' : 'media-error'}`}>{mediaSlotsRemaining > 0 ? `Can insert ${mediaSlotsRemaining} image(s).` : `Limit reached. Need ${pixelsMissingForNextMedia}px more.`}</p>}

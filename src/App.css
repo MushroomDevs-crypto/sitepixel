@@ -287,10 +287,19 @@ input[type='range'] {
   accent-color: var(--cyan);
 }
 
-input[type='file'] {
+.file-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   width: 100%;
-  font-size: 0.44rem;
-  color: var(--text);
+  flex-wrap: wrap;
+}
+
+.file-name-display {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.42rem;
+  color: var(--muted);
+  word-break: break-all;
 }
 
 /* ============================================================
