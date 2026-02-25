@@ -793,8 +793,11 @@ function App() {
       const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized')
       const tx = new Transaction({ blockhash, lastValidBlockHeight, feePayer: publicKey })
 
-      // Create receiver ATA if it doesn't exist (idempotent — no-op if already exists)
-      tx.add(createAssociatedTokenAccountIdempotentInstruction(publicKey, receiverATA, RECEIVER_PUBKEY, TOKEN_MINT_PUBKEY, TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID))
+      // Only create receiver ATA if it doesn't exist yet (saves ~0.002 SOL rent)
+      const receiverATAInfo = await connection.getAccountInfo(receiverATA)
+      if (!receiverATAInfo) {
+        tx.add(createAssociatedTokenAccountIdempotentInstruction(publicKey, receiverATA, RECEIVER_PUBKEY, TOKEN_MINT_PUBKEY, TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID))
+      }
       tx.add(createTransferInstruction(senderATA, receiverATA, publicKey, amount, [], TOKEN_2022_PROGRAM_ID))
 
       updateStatus('Assine a transacao na sua carteira...')
