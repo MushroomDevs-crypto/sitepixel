@@ -105,7 +105,7 @@
 
 @keyframes parallax-scroll {
   from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  to   { transform: translateX(-16.6667%); }
 }
 
 /* ============================================================
@@ -119,7 +119,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.45rem 0.75rem;
-  background:  #00b1ff;
+  background: var(--panel);
   border-bottom: 2px solid var(--panel-border);
   box-shadow: 0 2px 0 var(--cyan-dim);
 }
@@ -165,6 +165,7 @@
 
 .controls {
   flex-shrink: 0;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
@@ -172,7 +173,6 @@
   padding: 0.4rem 0.75rem;
   background: rgba(6, 6, 20, 0.92);
   border-bottom: 2px solid var(--panel-border);
-  overflow-x: auto;
 }
 
 .tool-group {
@@ -693,13 +693,10 @@ button:disabled {
 
   .controls {
     padding: 0.3rem 0.5rem;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    align-items: flex-start;
   }
 
   .tool-group {
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
   }
 
   .board-shell {
