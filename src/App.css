@@ -47,7 +47,7 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: var(--deep);
+  background: #0098DB;
   overflow: hidden;
 }
 
@@ -119,9 +119,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.45rem 0.75rem;
-  background: var(--panel);
-  border-bottom: 2px solid var(--panel-border);
-  box-shadow: 0 2px 0 var(--cyan-dim);
+  
 }
 
 .title-wrap {
