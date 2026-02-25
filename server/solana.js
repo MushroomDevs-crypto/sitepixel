@@ -10,18 +10,27 @@ export const RECEIVER_WALLET = 'A9wa37GiNEShZhTAThbjx59oWpuk1nwfNoqkocLFa3sH'
 export const TOKEN_DECIMALS = 6
 export const PRICE_PER_PIXEL = 10 ** TOKEN_DECIMALS // 1 token = 1 pixel
 
-export const connection = new Connection(RPC_URL, 'finalized')
+export const connection = new Connection(RPC_URL, 'confirmed')
+
+async function getTransactionWithRetry(txSignature, retries = 5, delayMs = 3000) {
+  for (let i = 0; i < retries; i++) {
+    const tx = await connection.getTransaction(txSignature, {
+      commitment: 'confirmed',
+      maxSupportedTransactionVersion: 0,
+    })
+    if (tx) return tx
+    if (i < retries - 1) await new Promise((r) => setTimeout(r, delayMs))
+  }
+  return null
+}
 
 export async function verifyPurchaseTransaction(txSignature, expectedWallet, expectedPixelCount) {
   const expectedAmount = BigInt(expectedPixelCount) * BigInt(PRICE_PER_PIXEL)
 
-  const tx = await connection.getTransaction(txSignature, {
-    commitment: 'finalized',
-    maxSupportedTransactionVersion: 0,
-  })
+  const tx = await getTransactionWithRetry(txSignature)
 
   if (!tx) {
-    return { valid: false, error: 'Transaction not found or not yet finalized. Try again in a few seconds.' }
+    return { valid: false, error: 'Transaction not found after multiple retries. Please try again.' }
   }
 
   if (tx.meta?.err) {
