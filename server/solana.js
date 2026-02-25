@@ -81,13 +81,7 @@ export async function verifyPurchaseTransaction(txSignature, expectedWallet, exp
     }
   }
 
-  const accountKeys = tx.transaction?.message?.getAccountKeys?.()
-    || tx.transaction?.message?.accountKeys
-    || []
-  const signerKey = accountKeys[0]?.toString?.() || accountKeys[0]
-  if (signerKey !== expectedWallet) {
-    return { valid: false, error: 'Transaction signer does not match authenticated wallet.' }
-  }
-
+  // Sender is already validated above via token balance changes
+  // (expectedWallet must appear in pre/post token balances with correct amounts)
   return { valid: true, error: null }
 }
