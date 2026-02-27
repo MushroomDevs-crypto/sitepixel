@@ -1,5 +1,4 @@
 export const TOKEN_MINT = '61L6rCdxthsGzzWzVTGZUTjTjAUKYN4A12kJmLVXpump'
-export const RECEIVER_WALLET = 'A9wa37GiNEShZhTAThbjx59oWpuk1nwfNoqkocLFa3sH'
 export const TOKEN_DECIMALS = 6
 export const PRICE_PER_PIXEL = 10 ** TOKEN_DECIMALS
 export const RPC_URL =

@@ -3,8 +3,8 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useConnection } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { PublicKey, Transaction } from '@solana/web3.js'
-import { createTransferInstruction, getAssociatedTokenAddressSync, createAssociatedTokenAccountIdempotentInstruction, TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from '@solana/spl-token'
-import { TOKEN_MINT, RECEIVER_WALLET, PRICE_PER_PIXEL } from './solana-config'
+import { createBurnInstruction, getAssociatedTokenAddressSync, TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID } from '@solana/spl-token'
+import { TOKEN_MINT, PRICE_PER_PIXEL } from './solana-config'
 import { apiFetch, setToken, clearToken } from './api'
 import bg1 from './assets/bg/1.png'
 import bg2 from './assets/bg/2.png'
@@ -58,7 +58,6 @@ const countOwnedInRect = (prefix, x, y, width, height) => {
 }
 
 const TOKEN_MINT_PUBKEY = new PublicKey(TOKEN_MINT)
-const RECEIVER_PUBKEY = new PublicKey(RECEIVER_WALLET)
 
 function App() {
   const { publicKey, signMessage, signTransaction, connected } = useWallet()
@@ -775,7 +774,7 @@ function App() {
     } catch (err) { updateStatus('Error: ' + err.message) }
   }
 
-  // --- Buy pixels with Solana token transfer ---
+  // --- Buy pixels by burning Solana SPL tokens ---
   const buySelectedPixels = async () => {
     if (!walletAddress || !isAuthenticated) { updateStatus('Connect and authenticate your wallet.'); return }
     if (selectionCountRef.current === 0) { updateStatus('Select at least 1 pixel.'); return }
@@ -789,33 +788,27 @@ function App() {
     if (selectedPixels.length === 0) { clearSelection(); updateStatus('No available pixels in selection.'); return }
 
     setBuying(true)
-    updateStatus(`Building transaction for ${selectedPixels.length} pixels...`)
+    updateStatus(`Building burn transaction for ${selectedPixels.length} pixels...`)
 
     try {
       const amount = selectedPixels.length * PRICE_PER_PIXEL
       const senderATA = getAssociatedTokenAddressSync(TOKEN_MINT_PUBKEY, publicKey, false, TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID)
-      const receiverATA = getAssociatedTokenAddressSync(TOKEN_MINT_PUBKEY, RECEIVER_PUBKEY, false, TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID)
 
       const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('finalized')
       const tx = new Transaction({ blockhash, lastValidBlockHeight, feePayer: publicKey })
 
-      // Only create receiver ATA if it doesn't exist yet (saves ~0.002 SOL rent)
-      const receiverATAInfo = await connection.getAccountInfo(receiverATA)
-      if (!receiverATAInfo) {
-        tx.add(createAssociatedTokenAccountIdempotentInstruction(publicKey, receiverATA, RECEIVER_PUBKEY, TOKEN_MINT_PUBKEY, TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID))
-      }
-      tx.add(createTransferInstruction(senderATA, receiverATA, publicKey, amount, [], TOKEN_2022_PROGRAM_ID))
+      tx.add(createBurnInstruction(senderATA, TOKEN_MINT_PUBKEY, publicKey, amount, [], TOKEN_2022_PROGRAM_ID))
 
-      updateStatus('Sign the transaction in your wallet...')
+      updateStatus('Sign the burn transaction in your wallet...')
       const signed = await signTransaction(tx)
 
-      updateStatus('Sending transaction...')
+      updateStatus('Sending burn transaction...')
       const sig = await connection.sendRawTransaction(signed.serialize(), { skipPreflight: false, preflightCommitment: 'confirmed' })
 
-      updateStatus(`Tx sent (${sig.slice(0, 8)}...). Awaiting confirmation...`)
+      updateStatus(`Burn tx sent (${sig.slice(0, 8)}...). Awaiting confirmation...`)
       await connection.confirmTransaction({ signature: sig, blockhash, lastValidBlockHeight }, 'confirmed')
 
-      updateStatus('Tx confirmed. Recording purchase...')
+      updateStatus('Burn confirmed. Recording purchase...')
       const result = await apiFetch('/purchase', { method: 'POST', body: JSON.stringify({ txSignature: sig, pixels: selectedPixels }) })
 
       // Update local state
